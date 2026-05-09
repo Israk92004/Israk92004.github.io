@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dewan Md Israk Noor — Cybersecurity Undergraduate</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #050a0e;
+    --surface:  #0a1520;
+    --surface2: #0f1e2e;
+    --accent:   #00ff88;
+    --accent2:  #00cfff;
+    --red:      #ff2d55;
+    --text:     #c8d8e8;
+    --muted:    #5a7a8a;
+    --border:   rgba(0,255,136,0.15);
+    --glow:     0 0 20px rgba(0,255,136,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Cursor */
+  #cursor {
+    position: fixed; top:0; left:0; z-index:9999; pointer-events:none;
+    width:20px; height:20px;
+    border:2px solid var(--accent);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    transition:transform .12s ease, border-color .2s;
+    mix-blend-mode:screen;
+  }
+  #cursor-dot {
+    position:fixed; top:0; left:0; z-index:9999; pointer-events:none;
+    width:5px; height:5px;
+    background:var(--accent); border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  /* Matrix BG */
+  #matrix-bg { position:fixed; inset:0; z-index:0; opacity:.07; }
+
+  body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(0,255,136,.04) 1px, transparent 1px),
+      linear-gradient(90deg,rgba(0,255,136,.04) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+  }
+  body::after {
+    content:'';
+    position:fixed; inset:0; z-index:200;
+    background:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+    pointer-events:none;
+  }
+
+  /* Nav */
+  nav {
+    position:fixed; top:0; left:50%; transform:translateX(-50%);
+    z-index:100;
+    display:flex; align-items:center; gap:8px;
+    padding:12px 20px;
+    background:rgba(5,10,14,.9);
+    border:1px solid var(--border); border-top:none;
+    border-radius:0 0 20px 20px;
+    backdrop-filter:blur(16px);
+    font-family:'Share Tech Mono',monospace; font-size:.75rem; letter-spacing:.08em;
+  }
+  .nav-status {
+    display:flex; align-items:center; gap:6px;
+    padding:5px 12px; border:1px solid var(--border); border-radius:20px; color:var(--accent);
+  }
+  .nav-dot { width:7px; height:7px; background:var(--accent); border-radius:50%; animation:blink 1.2s infinite; box-shadow:var(--glow); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  .nav-links { display:flex; gap:4px; }
+  .nav-links a {
+    color:var(--muted); text-decoration:none;
+    padding:5px 14px; border-radius:20px;
+    transition:color .2s, background .2s;
+  }
+  .nav-links a:hover { color:var(--accent); background:rgba(0,255,136,.08); border:1px solid var(--border); }
+  .nav-links a.active { color:var(--bg); background:var(--accent); }
+
+  /* Hero */
+  .hero {
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:grid; grid-template-columns:1fr 1fr;
+    align-items:center; gap:40px;
+    padding:120px 80px 80px;
+    max-width:1400px; margin:0 auto;
+  }
+  .hero-left { display:flex; flex-direction:column; gap:18px; }
+
+  .hero-tag {
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.15em;
+    opacity:0; animation:fadeUp .7s .1s forwards;
+  }
+  .hero-tag::before { content:''; width:30px; height:1px; background:var(--accent); box-shadow:var(--glow); }
+
+  .hero-greeting {
+    font-size:clamp(1.6rem,3vw,2.4rem); font-weight:400; color:#fff;
+    font-family:'Orbitron',monospace; line-height:1.1;
+    opacity:0; animation:fadeUp .7s .15s forwards;
+  }
+  .hero-name {
+    font-size:clamp(2rem,4.5vw,4rem); font-weight:900;
+    font-family:'Orbitron',monospace; line-height:1;
+    background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 30px rgba(0,255,136,.5));
+    opacity:0; animation:fadeUp .7s .2s forwards;
+  }
+  .hero-title { font-size:1.4rem; font-weight:700; color:#fff; letter-spacing:.05em; opacity:0; animation:fadeUp .7s .25s forwards; }
+  .hero-sub { font-size:.95rem; color:var(--accent2); font-family:'Share Tech Mono',monospace; opacity:0; animation:fadeUp .7s .3s forwards; }
+  .hero-uni { font-size:1rem; color:var(--text); opacity:0; animation:fadeUp .7s .35s forwards; }
+  .hero-uni span { color:var(--accent); font-weight:700; }
+  .hero-uni small { font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--muted); }
+
+  .hero-desc { font-size:1rem; line-height:1.7; color:var(--muted); max-width:520px; opacity:0; animation:fadeUp .7s .4s forwards; }
+
+  .hero-loc {
+    display:flex; align-items:center; gap:8px;
+    font-family:'Share Tech Mono',monospace; font-size:.78rem; color:var(--muted);
+    opacity:0; animation:fadeUp .7s .45s forwards;
+  }
+
+  .hero-btns { display:flex; gap:12px; flex-wrap:wrap; opacity:0; animation:fadeUp .7s .5s forwards; }
+  .btn-primary {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 28px;
+    background:transparent; border:1px solid var(--accent);
+    color:var(--accent); font-family:'Share Tech Mono',monospace;
+    font-size:.82rem; letter-spacing:.1em; border-radius:4px;
+    cursor:pointer; text-decoration:none; position:relative; overflow:hidden;
+    transition:color .3s;
+  }
+  .btn-primary::before {
+    content:''; position:absolute; left:-100%; top:0;
+    width:100%; height:100%; background:var(--accent);
+    transition:left .3s ease; z-index:-1;
+  }
+  .btn-primary:hover { color:var(--bg); }
+  .btn-primary:hover::before { left:0; }
+  .btn-secondary {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 28px;
+    background:transparent; border:1px solid rgba(0,207,255,.3);
+    color:var(--accent2); font-family:'Share Tech Mono',monospace;
+    font-size:.82rem; letter-spacing:.1em; border-radius:4px;
+    cursor:pointer; text-decoration:none; transition:background .3s, border-color .3s;
+  }
+  .btn-secondary:hover { background:rgba(0,207,255,.08); border-color:var(--accent2); }
+
+  /* Hero Card */
+  .hero-card {
+    background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);
+    border:1px solid var(--border); border-radius:20px; padding:36px 32px;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:24px;
+    box-shadow:0 0 60px rgba(0,255,136,.05), inset 0 1px 0 rgba(255,255,255,.05);
+    opacity:0; animation:fadeUp .7s .2s forwards;
+  }
+  .hero-card::before {
+    content:''; position:absolute; top:-50%; right:-50%;
+    width:300px; height:300px;
+    background:radial-gradient(circle,rgba(0,255,136,.08) 0%,transparent 70%);
+    pointer-events:none;
+  }
+
+  .avatar-wrap { display:flex; justify-content:center; position:relative; }
+  .avatar-ring {
+    width:120px; height:120px; border-radius:50%;
+    padding:3px; position:relative;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    animation:glow-pulse 3s ease-in-out infinite;
+  }
+  @keyframes glow-pulse {
+    0%,100% { box-shadow:0 0 20px rgba(0,255,136,.6),0 0 40px rgba(0,255,136,.3); }
+    50%      { box-shadow:0 0 20px rgba(0,207,255,.6),0 0 40px rgba(0,207,255,.3); }
+  }
+  .avatar-inner {
+    width:100%; height:100%; border-radius:50%;
+    background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    font-size:3.5rem; overflow:hidden;
+  }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .stat {
+    background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:12px;
+    padding:14px 10px; text-align:center;
+    transition:border-color .3s, box-shadow .3s; cursor:default;
+  }
+  .stat:hover { border-color:var(--accent2); box-shadow:0 0 20px rgba(0,207,255,.15); }
+  .stat-num {
+    font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:700;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .stat-label { font-size:.72rem; color:var(--muted); margin-top:4px; letter-spacing:.04em; line-height:1.3; }
+
+  .skills-wrap { display:flex; flex-wrap:wrap; gap:8px; }
+  .skill-tag {
+    padding:5px 14px;
+    background:rgba(0,255,136,.05); border:1px solid rgba(0,255,136,.2);
+    border-radius:20px; font-family:'Share Tech Mono',monospace;
+    font-size:.73rem; color:var(--accent); letter-spacing:.05em;
+    transition:background .2s, box-shadow .2s;
+  }
+  .skill-tag:hover { background:rgba(0,255,136,.15); box-shadow:0 0 12px rgba(0,255,136,.2); }
+
+  .card-tagline { text-align:center; }
+  .card-tagline-title { font-family:'Orbitron',monospace; font-weight:700; font-size:.9rem; color:#fff; }
+  .card-tagline-sub { font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--muted); margin-top:6px; letter-spacing:.1em; }
+  .card-tagline-sub span { color:var(--accent2); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Sections */
+  section {
+    position:relative; z-index:1;
+    max-width:1400px; margin:0 auto;
+    padding:72px 80px;
+  }
+  .section-header { display:flex; align-items:center; gap:16px; margin-bottom:44px; }
+  .section-num { font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--accent); opacity:.5; letter-spacing:.15em; }
+  .section-title { font-family:'Orbitron',monospace; font-size:1.5rem; font-weight:700; color:#fff; letter-spacing:.05em; }
+  .section-line { flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); }
+
+  /* Timeline (Experience) */
+  .timeline { display:flex; flex-direction:column; gap:0; position:relative; padding-left:40px; }
+  .timeline::before {
+    content:''; position:absolute; left:9px; top:10px; bottom:10px; width:2px;
+    background:linear-gradient(180deg,var(--accent),var(--accent2),transparent);
+  }
+  .timeline-item { position:relative; padding:0 0 36px 28px; }
+  .timeline-dot {
+    position:absolute; left:-31px; top:6px;
+    width:20px; height:20px; border-radius:50%;
+    border:2px solid var(--accent); background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .timeline-dot::after { content:''; width:8px; height:8px; border-radius:50%; background:var(--accent); }
+  .tl-date { font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--accent2); letter-spacing:.1em; margin-bottom:8px; }
+  .tl-role { font-family:'Orbitron',monospace; font-size:.95rem; font-weight:700; color:#fff; }
+  .tl-org { font-size:.9rem; color:var(--accent); font-weight:600; margin-bottom:12px; }
+  .tl-points { list-style:none; display:flex; flex-direction:column; gap:7px; }
+  .tl-points li {
+    font-size:.92rem; color:var(--muted); padding-left:16px; position:relative; line-height:1.6;
+  }
+  .tl-points li::before { content:'▸'; position:absolute; left:0; color:var(--accent); font-size:.75rem; top:2px; }
+
+  /* Cards grid */
+  .cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .info-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:28px 24px; position:relative; overflow:hidden;
+    transition:transform .3s, border-color .3s, box-shadow .3s;
+  }
+  .info-card:hover { transform:translateY(-5px); border-color:rgba(0,255,136,.4); box-shadow:0 20px 40px rgba(0,255,136,.07); }
+  .info-card::after {
+    content:''; position:absolute; bottom:0; left:0;
+    width:0; height:2px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width .4s ease;
+  }
+  .info-card:hover::after { width:100%; }
+  .card-icon { font-size:1.6rem; margin-bottom:14px; }
+  .card-title { font-family:'Orbitron',monospace; font-size:.85rem; font-weight:700; color:#fff; margin-bottom:10px; letter-spacing:.03em; }
+  .card-body { font-size:.88rem; color:var(--muted); line-height:1.7; }
+  .card-body li { list-style:none; padding-left:14px; position:relative; margin-bottom:5px; }
+  .card-body li::before { content:'▸'; position:absolute; left:0; color:var(--accent); font-size:.7rem; top:3px; }
+
+  /* Achievement list */
+  .achievement-list { display:flex; flex-direction:column; gap:12px; }
+  .achievement-item {
+    display:flex; align-items:flex-start; gap:16px;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:18px 22px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .achievement-item:hover { border-color:rgba(0,255,136,.35); box-shadow:0 0 20px rgba(0,255,136,.06); }
+  .ach-icon { font-size:1.3rem; flex-shrink:0; margin-top:2px; }
+  .ach-year { font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--accent2); letter-spacing:.08em; margin-bottom:4px; }
+  .ach-text { font-size:.95rem; color:var(--text); font-weight:600; }
+  .ach-issuer { font-size:.82rem; color:var(--muted); margin-top:3px; }
+
+  /* Terminal */
+  .terminal {
+    background:#010a05; border:1px solid rgba(0,255,136,.2); border-radius:12px;
+    padding:24px 28px; font-family:'Share Tech Mono',monospace; font-size:.83rem; line-height:1.9;
+    position:relative; overflow:hidden;
+  }
+  .terminal::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:30px;
+    background:rgba(0,255,136,.04); border-bottom:1px solid rgba(0,255,136,.1);
+  }
+  .term-dots { position:absolute; top:9px; left:14px; display:flex; gap:6px; }
+  .term-dots span { width:10px; height:10px; border-radius:50%; }
+  .term-dots span:nth-child(1){background:#ff5f56}
+  .term-dots span:nth-child(2){background:#ffbd2e}
+  .term-dots span:nth-child(3){background:#27c93f}
+  .term-head { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:.72rem; color:var(--muted); }
+  .term-body { padding-top:16px; }
+  .t-p { color:var(--accent); }
+  .t-c { color:var(--accent2); }
+  .t-m { color:var(--muted); }
+  .t-o { color:var(--text); }
+  .t-h { color:var(--accent); }
+  .t-cur { display:inline-block; width:8px; height:14px; background:var(--accent); vertical-align:middle; margin-left:2px; animation:blink 1s infinite; }
+
+  /* Contact */
+  .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+  .contact-item {
+    display:flex; align-items:center; gap:16px;
+    padding:18px 22px;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    margin-bottom:12px; transition:border-color .2s;
+  }
+  .contact-item:hover { border-color:rgba(0,255,136,.4); }
+  .contact-icon { width:42px; height:42px; border-radius:10px; background:rgba(0,255,136,.05); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+  .contact-label { font-size:.72rem; color:var(--muted); font-family:'Share Tech Mono',monospace; letter-spacing:.08em; }
+  .contact-value { font-size:.92rem; color:#fff; font-weight:600; margin-top:2px; }
+
+  /* Langs */
+  .lang-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .lang-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:20px 16px; text-align:center;
+    transition:border-color .3s, transform .3s;
+  }
+  .lang-card:hover { border-color:rgba(0,207,255,.4); transform:translateY(-3px); }
+  .lang-flag { font-size:1.8rem; margin-bottom:8px; }
+  .lang-name { font-family:'Orbitron',monospace; font-size:.75rem; font-weight:700; color:#fff; }
+  .lang-level { font-family:'Share Tech Mono',monospace; font-size:.7rem; color:var(--accent2); margin-top:4px; }
+
+  footer {
+    position:relative; z-index:1;
+    border-top:1px solid var(--border);
+    padding:28px 80px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--muted);
+  }
+  footer span { color:var(--accent); }
+  footer a { color:var(--accent2); text-decoration:none; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-status"><div class="nav-dot"></div>ONLINE</div>
+  <div class="nav-links">
+    <a href="#home" class="active">Home</a>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#achievements">Achievements</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="home">
+  <div class="hero-left">
+    <div class="hero-tag">CYBERSECURITY UNDERGRADUATE · APU MALAYSIA</div>
+    <div>
+      <div class="hero-greeting">Hello, I'm</div>
+      <div class="hero-name">Dewan Israk Noor</div>
+    </div>
+    <div class="hero-title">Cybersecurity Undergraduate</div>
+    <div class="hero-sub">&amp; Ethical Hacking Enthusiast · Web Dev Trainee</div>
+    <div class="hero-uni">
+      Studying at <span>Asia Pacific University (APU)</span><br/>
+      <small>📍 2nd Year, 1st Semester · Kuala Lumpur, Malaysia</small>
+    </div>
+    <div class="hero-desc">
+      Motivated and disciplined cybersecurity student with a strong foundation in 
+      networking, programming, and digital forensics. Passionate about ethical hacking 
+      and continuous learning — seeking opportunities to leverage academic knowledge 
+      and leadership skills in a professional environment.
+    </div>
+    <div class="hero-loc">
+      <span>📍</span> Kuala Lumpur, Malaysia
+    </div>
+    <div class="hero-btns">
+      <a href="#experience" class="btn-primary">🔐 View My Work</a>
+      <a href="#contact" class="btn-secondary">✉️ Contact Me</a>
+    </div>
+  </div>
+
+  <!-- CARD -->
+  <div class="hero-card">
+    <div class="avatar-wrap">
+      <div class="avatar-ring">
+        <div class="avatar-inner">🧑‍💻</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num">2025</div>
+        <div class="stat-label">Started<br/>Degree</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">261K</div>
+        <div class="stat-label">Followers<br/>Managed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">Certs<br/>Earned</div>
+      </div>
+    </div>
+
+    <div class="skills-wrap">
+      <div class="skill-tag">Ethical Hacking</div>
+      <div class="skill-tag">Threat Analysis</div>
+      <div class="skill-tag">Python</div>
+      <div class="skill-tag">SQL</div>
+      <div class="skill-tag">Digital Forensics</div>
+      <div class="skill-tag">HTML/CSS</div>
+      <div class="skill-tag">AI Tools</div>
+      <div class="skill-tag">OSINT</div>
+    </div>
+
+    <div class="card-tagline">
+      <div class="card-tagline-title">Building Cyber Resilience</div>
+      <div class="card-tagline-sub">
+        <span>Secure</span> • <span>Learn</span> • <span>Protect</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div class="section-title">EXPERIENCE</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-date">2025 · PRESENT</div>
+      <div class="tl-role">WEB DEVELOPMENT TRAINEE</div>
+      <div class="tl-org">Programming Hero</div>
+      <ul class="tl-points">
+        <li>Currently undergoing intensive training in modern web development practices.</li>
+        <li>Developing research skills and technical proficiency in modern web technologies.</li>
+        <li>Building projects that merge web development skills with cybersecurity awareness.</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="tl-date">PREVIOUS</div>
+      <div class="tl-role">SOCIAL MEDIA MANAGER</div>
+      <div class="tl-org">Dr. Milon — Public Figure Page</div>
+      <ul class="tl-points">
+        <li>Managed a high-traffic Facebook page with over <strong style="color:var(--accent)">261,000 followers</strong>.</li>
+        <li>Demonstrated strong communication and leadership skills by curating content and engaging with a large online community.</li>
+        <li>Implemented digital marketing strategies to maintain audience engagement and sustained growth.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div class="section-title">EDUCATION &amp; SKILLS</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">BACHELOR IN CYBER SECURITY</div>
+      <div class="card-body">
+        Asia Pacific University of Technology &amp; Innovation (APU)<br/>
+        <span style="color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:.78rem;">2025 – Present · 2nd Year, 1st Semester</span>
+        <br/><br/>
+        <ul>
+          <li>Introduction to Networking &amp; Digital Innovation</li>
+          <li>Python Programming &amp; Database (SQL)</li>
+          <li>Intro to Security &amp; Forensic Technologies</li>
+          <li>AI, Systems Analysis &amp; Design</li>
+          <li>Mathematics &amp; Computing Systems</li>
+          <li>Co-curricular: Business Project &amp; Entrepreneurship</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title">CYBERSECURITY SKILLS</div>
+      <div class="card-body">
+        <ul>
+          <li>Threat Landscape Analysis</li>
+          <li>Ethical Hacking Fundamentals</li>
+          <li>Digital Forensics Concepts</li>
+          <li>Network Security Basics</li>
+          <li>OSINT Research Techniques</li>
+          <li>Security Incident Awareness</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-icon">💻</div>
+      <div class="card-title">TECHNICAL SKILLS</div>
+      <div class="card-body">
+        <ul>
+          <li>Python Programming</li>
+          <li>SQL &amp; Database Management</li>
+          <li>Web Development (HTML/CSS)</li>
+          <li>System Analysis &amp; Design</li>
+          <li>AI Tools for Smart Productivity</li>
+          <li>Social Media Strategy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terminal: soft skills + languages -->
+  <div style="margin-top:24px;">
+    <div class="terminal">
+      <div class="term-dots"><span></span><span></span><span></span></div>
+      <div class="term-head">dewan@apu:~$</div>
+      <div class="term-body">
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> cat soft_skills.txt</div>
+        <div class="t-o">&nbsp;&nbsp;✔ Leadership &nbsp; ✔ Communication &nbsp; ✔ Critical Thinking &nbsp; ✔ Research</div>
+        <br/>
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> cat languages.txt</div>
+        <div class="t-o">
+          &nbsp;&nbsp;🇧🇩 Bangla → <span class="t-h">Native/Fluent</span> &nbsp;|&nbsp;
+          🇬🇧 English → <span class="t-h">Fluent (PTE: 50)</span><br/>
+          &nbsp;&nbsp;🇵🇰 Urdu  → <span class="t-h">Fluent</span> &nbsp;|&nbsp;
+          🇲🇾 Malay  → <span class="t-h">Basic</span>
+        </div>
+        <br/>
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> echo $CURRENT_GOAL</div>
+        <div class="t-o">"Land a cybersecurity internship &amp; grow as an ethical hacker."</div>
+        <br/>
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> <span class="t-cur"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div class="section-title">ACHIEVEMENTS &amp; CERTIFICATIONS</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="achievement-list">
+    <div class="achievement-item">
+      <div class="ach-icon">🏅</div>
+      <div>
+        <div class="ach-year">2025 · FORTINET TRAINING INSTITUTE</div>
+        <div class="ach-text">Getting Started in Cybersecurity 3.0</div>
+        <div class="ach-issuer">Certified by Fortinet Training Institute</div>
+      </div>
+    </div>
+    <div class="achievement-item">
+      <div class="ach-icon">🔍</div>
+      <div>
+        <div class="ach-year">2025 · FORTINET TRAINING INSTITUTE</div>
+        <div class="ach-text">Introduction to the Threat Landscape 3.0</div>
+        <div class="ach-issuer">Certified by Fortinet Training Institute</div>
+      </div>
+    </div>
+    <div class="achievement-item">
+      <div class="ach-icon">⚔️</div>
+      <div>
+        <div class="ach-year">2025 · ASIA PACIFIC UNIVERSITY (APU)</div>
+        <div class="ach-text">Zero to Cyber Hero: Hands-on Hacking Workshop</div>
+        <div class="ach-issuer">Certified by APU — Practical ethical hacking fundamentals</div>
+      </div>
+    </div>
+    <div class="achievement-item">
+      <div class="ach-icon">🤖</div>
+      <div>
+        <div class="ach-year">2025 · DIVINE CONSULTANCY</div>
+        <div class="ach-text">AI for Smart Productivity Masterclass</div>
+        <div class="ach-issuer">Certified by Divine Consultancy</div>
+      </div>
+    </div>
+    <div class="achievement-item">
+      <div class="ach-icon">🎖️</div>
+      <div>
+        <div class="ach-year">2025 · ASIA PACIFIC UNIVERSITY (APU)</div>
+        <div class="ach-text">Merdeka Fiesta Volunteer — Certificate of Appreciation</div>
+        <div class="ach-issuer">Awarded for dedication and contribution by APU</div>
+      </div>
+    </div>
+    <div class="achievement-item">
+      <div class="ach-icon">📱</div>
+      <div>
+        <div class="ach-year">10 MINUTE SCHOOL</div>
+        <div class="ach-text">Facebook Marketing Certification</div>
+        <div class="ach-issuer">Digital marketing &amp; social media growth strategies</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div class="section-title">CONTACT</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-grid">
+    <div>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div>
+          <div class="contact-label">WHATSAPP</div>
+          <div class="contact-value">+880 1751 267 768</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">✉️</div>
+        <div>
+          <div class="contact-label">EMAIL</div>
+          <div class="contact-value">dewanisraknoor@gmail.com</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">LOCATION</div>
+          <div class="contact-value">Kuala Lumpur, Malaysia</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🎓</div>
+        <div>
+          <div class="contact-label">UNIVERSITY</div>
+          <div class="contact-value">Asia Pacific University (APU)</div>
+        </div>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="term-dots"><span></span><span></span><span></span></div>
+      <div class="term-head">status.sh</div>
+      <div class="term-body">
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> ./status.sh</div>
+        <br/>
+        <div class="t-o">
+          <span class="t-h">STATUS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → Open to Internship &amp; Opportunities<br/>
+          <span class="t-h">FOCUS</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → Cybersecurity &amp; Ethical Hacking<br/>
+          <span class="t-h">AVAILABLE</span>&nbsp; → Part-time / Internship Roles<br/>
+          <span class="t-h">LOCATION</span>&nbsp;&nbsp; → Kuala Lumpur, Malaysia 🇲🇾<br/>
+          <span class="t-h">RESPONSE</span>&nbsp;&nbsp; → Within 24 hours via WhatsApp/Email
+        </div>
+        <br/>
+        <div><span class="t-m"># Preferred contact method:</span></div>
+        <div class="t-o">dewanisraknoor@gmail.com</div>
+        <br/>
+        <div><span class="t-p">dewan@apu</span>:<span class="t-c">~$</span> <span class="t-cur"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2025 <span>Dewan Md Israk Noor</span> — All Rights Reserved</div>
+  <div>Cybersecurity Undergraduate · <span>APU Malaysia</span></div>
+  <div><a href="mailto:dewanisraknoor@gmail.com">dewanisraknoor@gmail.com</a></div>
+</footer>
+
+<script>
+// Matrix canvas
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+const cols = () => Math.floor(canvas.width / 18);
+let drops = Array(cols()).fill(1);
+window.addEventListener('resize', () => { drops = Array(cols()).fill(1); });
+const chars = '01アイウエオカキクケコサシスセソタチツテトDEWANISRAKNOOR';
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(5,10,14,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff88';
+  ctx.font = '13px Share Tech Mono, monospace';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * 18, y * 18);
+    if (y * 18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 55);
+
+// Cursor
+const cursor = document.getElementById('cursor');
+const dot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+  dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.stat,.info-card,.skill-tag,.achievement-item,.lang-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform='translate(-50%,-50%) scale(2)'; cursor.style.borderColor='var(--accent2)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform='translate(-50%,-50%) scale(1)'; cursor.style.borderColor='var(--accent)'; });
+});
+
+// Nav active on scroll
+const sections = document.querySelectorAll('section,[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
